@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/669143048.svg)](https://zenodo.org/badge/latestdoi/669143048)
+
 ```
 # ~~~
 # This file is part of the paper:
