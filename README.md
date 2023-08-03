@@ -20,7 +20,7 @@
 In this repository, we provide the code used for the numerical experiments in our paper "Be greedy and learn: efficient
 and certified algorithms for parametrized optimal control problems" by Hendrik Kleikamp, Martin Lazar, and Cesare Molinari.
 
-You find the preprint [here](https://arxiv.org/abs/tba).
+You find the preprint [here](https://arxiv.org/abs/2307.15590).
 
 ## Installation
 On a system with `git` (`sudo apt install git`), `python3` (`sudo apt install python3-dev`) and
