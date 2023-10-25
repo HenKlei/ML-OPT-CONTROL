@@ -1,7 +1,8 @@
 import numpy as np
 
 from ml_control.logger import getLogger
-from ml_control.systems import solve_homogeneous_system, get_state_from_final_time_adjoint, solve_optimal_control_problem
+from ml_control.systems import solve_homogeneous_system, get_state_from_final_time_adjoint,\
+    solve_optimal_control_problem
 
 
 def greedy(training_parameters, N, T, nt, parametrized_A, parametrized_B, parametrized_x0, parametrized_xT, R_chol, M,

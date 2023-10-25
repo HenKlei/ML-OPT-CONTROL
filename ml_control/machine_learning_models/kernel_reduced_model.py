@@ -30,4 +30,7 @@ class KernelReducedModel(BasicReducedMachineLearningModel):
     def get_coefficients(self, mu):
         """Computes the reduced coefficients for the given parameter using the VKOGA surrogate."""
         converted_input = mu.reshape(1, -1)
-        return self.kernel_model.predict(converted_input).flatten()
+        if hasattr(self, "kernel_model"):
+            return self.kernel_model.predict(converted_input).flatten()
+        else:
+            return np.zeros(len(self.reduced_model.reduced_basis))

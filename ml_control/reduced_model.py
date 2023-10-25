@@ -1,6 +1,7 @@
 import numpy as np
 
-from ml_control.systems import solve_homogeneous_system, get_state_from_final_time_adjoint, get_control_from_final_time_adjoint
+from ml_control.systems import solve_homogeneous_system, get_state_from_final_time_adjoint,\
+    get_control_from_final_time_adjoint
 
 
 class ReducedModel:
@@ -26,14 +27,19 @@ class ReducedModel:
         xT = self.parametrized_xT(mu)
         x0_T_mu = solve_homogeneous_system(x0, self.T, self.nt, A)[-1]
 
-        mat = np.array([phi - self.M @ get_state_from_final_time_adjoint(phi, np.zeros(self.N), self.T, self.nt,
-                                                                         A, B, self.R_chol)[-1]
-                        for phi in self.reduced_basis]).T
-        phi_reduced_coefficients = np.linalg.solve(mat.T @ mat, mat.T @ self.M @ (x0_T_mu - xT))
-        if return_adjoint_coefficients:
-            return phi_reduced_coefficients
+        if self.reduced_basis is not None:
+            mat = np.array([phi - self.M @ get_state_from_final_time_adjoint(phi, np.zeros(self.N), self.T, self.nt,
+                                                                             A, B, self.R_chol)[-1]
+                            for phi in self.reduced_basis]).T
+            phi_reduced_coefficients = np.linalg.solve(mat.T @ mat, mat.T @ self.M @ (x0_T_mu - xT))
+            if return_adjoint_coefficients:
+                return phi_reduced_coefficients
 
-        phi_reduced = self.reduced_basis.T @ phi_reduced_coefficients
+            phi_reduced = self.reduced_basis.T @ phi_reduced_coefficients
+        else:
+            if return_adjoint_coefficients:
+                return None
+            phi_reduced = np.zeros(self.N)
         u = get_control_from_final_time_adjoint(phi_reduced, self.T, self.nt, A, B, self.R_chol)
         if return_adjoint:
             return u, phi_reduced
@@ -48,11 +54,14 @@ class ReducedModel:
         xT = self.parametrized_xT(mu)
         x0_T_mu = solve_homogeneous_system(x0, self.T, self.nt, A)[-1]
 
-        mat = np.array([phi - self.M @ get_state_from_final_time_adjoint(phi, np.zeros(self.N), self.T, self.nt,
-                                                                         A, B, self.R_chol)[-1]
-                        for phi in self.reduced_basis]).T
-        phi_reduced_coefficients = np.linalg.solve(mat.T @ mat, mat.T @ self.M @ (x0_T_mu - xT))
-        projection = mat @ phi_reduced_coefficients
+        if self.reduced_basis is not None:
+            mat = np.array([phi - self.M @ get_state_from_final_time_adjoint(phi, np.zeros(self.N), self.T, self.nt,
+                                                                             A, B, self.R_chol)[-1]
+                            for phi in self.reduced_basis]).T
+            phi_reduced_coefficients = np.linalg.solve(mat.T @ mat, mat.T @ self.M @ (x0_T_mu - xT))
+            projection = mat @ phi_reduced_coefficients
+        else:
+            projection = np.zeros(self.N)
 
         estimated_error_mu = self.spatial_norm(projection - self.M @ (x0_T_mu - xT))
         return estimated_error_mu

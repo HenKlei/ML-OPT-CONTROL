@@ -5,6 +5,8 @@ dependencies = [
     'numpy',
     'scipy',
     'matplotlib',
+    'scikit-learn',
+    'VKOGA @ git+https://github.com/GabrieleSantin/VKOGA.git',
     'torch',
 ]
 
