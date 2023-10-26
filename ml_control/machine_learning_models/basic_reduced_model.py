@@ -64,11 +64,10 @@ class BasicReducedMachineLearningModel:
         x0_T_mu = solve_homogeneous_system(x0, self.T, self.nt, A)[-1]
 
         if self.reduced_model.reduced_basis is not None:
-            mat = np.array([phi - self.M @ get_state_from_final_time_adjoint(phi, np.zeros(self.N), self.T, self.nt,
-                                                                             A, B, self.R_chol)[-1]
-                            for phi in self.reduced_model.reduced_basis]).T
             phi_reduced_coefficients = self.get_coefficients(mu)
-            projection = mat @ phi_reduced_coefficients
+            phi_reduced = self.reduced_model.reduced_basis.T @ phi_reduced_coefficients
+            projection = phi_reduced - self.M @ get_state_from_final_time_adjoint(phi_reduced, np.zeros(self.N), self.T,
+                                                                                  self.nt, A, B, self.R_chol)[-1]
         else:
             phi_reduced_coefficients = None
             projection = np.zeros(self.reduced_model.N)
