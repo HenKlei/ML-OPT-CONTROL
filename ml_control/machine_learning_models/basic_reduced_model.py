@@ -32,17 +32,20 @@ class BasicReducedMachineLearningModel:
         """Computes the reduced coefficients for the given parameter using the machine learning surrogate."""
         raise NotImplementedError
 
-    def solve(self, mu, return_adjoint=True, return_adjoint_coefficients=False):
+    def solve(self, mu, reduced_coeffs=None, return_adjoint=True, return_adjoint_coefficients=False):
         """Solves the machine learning reduced model for the given parameter."""
-        if self.reduced_model.reduced_basis is not None:
-            phi_reduced_coefficients = self.get_coefficients(mu)
-            if return_adjoint_coefficients:
-                return phi_reduced_coefficients
-            phi_reduced = self.reduced_model.reduced_basis.T @ phi_reduced_coefficients
+        if reduced_coeffs is None:
+            if self.reduced_model.reduced_basis is not None:
+                phi_reduced_coefficients = self.get_coefficients(mu)
+                if return_adjoint_coefficients:
+                    return phi_reduced_coefficients
+                phi_reduced = self.reduced_model.reduced_basis.T @ phi_reduced_coefficients
+            else:
+                if return_adjoint_coefficients:
+                    return None
+                phi_reduced = np.zeros(self.reduced_model.N)
         else:
-            if return_adjoint_coefficients:
-                return None
-            phi_reduced = np.zeros(self.reduced_model.N)
+            phi_reduced = self.reduced_model.reduced_basis.T @ reduced_coeffs
 
         A = self.parametrized_A(mu)
         B = self.parametrized_B(mu)
@@ -52,9 +55,8 @@ class BasicReducedMachineLearningModel:
         else:
             return u
 
-    def estimate_error(self, mu):
+    def estimate_error(self, mu, return_reduced_coefficients=False):
         """Estimates the error in the final time adjoint."""
-
         A = self.parametrized_A(mu)
         B = self.parametrized_B(mu)
         x0 = self.parametrized_x0(mu)
@@ -68,7 +70,10 @@ class BasicReducedMachineLearningModel:
             phi_reduced_coefficients = self.get_coefficients(mu)
             projection = mat @ phi_reduced_coefficients
         else:
+            phi_reduced_coefficients = None
             projection = np.zeros(self.reduced_model.N)
 
         estimated_error_mu = self.spatial_norm(projection - self.M @ (x0_T_mu - xT))
+        if return_reduced_coefficients:
+            return estimated_error_mu, phi_reduced_coefficients
         return estimated_error_mu

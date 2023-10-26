@@ -19,34 +19,37 @@ class ReducedModel:
         self.M = M
         self.spatial_norm = spatial_norm
 
-    def solve(self, mu, return_adjoint=True, return_adjoint_coefficients=False):
+    def solve(self, mu, reduced_coeffs=None, return_adjoint=True, return_adjoint_coefficients=False):
         """Solves the reduced basis reduced model for the given parameter."""
         A = self.parametrized_A(mu)
         B = self.parametrized_B(mu)
-        x0 = self.parametrized_x0(mu)
-        xT = self.parametrized_xT(mu)
-        x0_T_mu = solve_homogeneous_system(x0, self.T, self.nt, A)[-1]
+        if reduced_coeffs is None:
+            if self.reduced_basis is not None:
+                x0 = self.parametrized_x0(mu)
+                xT = self.parametrized_xT(mu)
+                x0_T_mu = solve_homogeneous_system(x0, self.T, self.nt, A)[-1]
 
-        if self.reduced_basis is not None:
-            mat = np.array([phi - self.M @ get_state_from_final_time_adjoint(phi, np.zeros(self.N), self.T, self.nt,
-                                                                             A, B, self.R_chol)[-1]
-                            for phi in self.reduced_basis]).T
-            phi_reduced_coefficients = np.linalg.solve(mat.T @ mat, mat.T @ self.M @ (x0_T_mu - xT))
-            if return_adjoint_coefficients:
-                return phi_reduced_coefficients
+                mat = np.array([phi - self.M @ get_state_from_final_time_adjoint(phi, np.zeros(self.N), self.T, self.nt,
+                                                                                 A, B, self.R_chol)[-1]
+                                for phi in self.reduced_basis]).T
+                phi_reduced_coefficients = np.linalg.solve(mat.T @ mat, mat.T @ self.M @ (x0_T_mu - xT))
+                if return_adjoint_coefficients:
+                    return phi_reduced_coefficients
 
-            phi_reduced = self.reduced_basis.T @ phi_reduced_coefficients
+                phi_reduced = self.reduced_basis.T @ phi_reduced_coefficients
+            else:
+                if return_adjoint_coefficients:
+                    return None
+                phi_reduced = np.zeros(self.N)
         else:
-            if return_adjoint_coefficients:
-                return None
-            phi_reduced = np.zeros(self.N)
+            phi_reduced = self.reduced_basis.T @ reduced_coeffs
         u = get_control_from_final_time_adjoint(phi_reduced, self.T, self.nt, A, B, self.R_chol)
         if return_adjoint:
             return u, phi_reduced
         else:
             return u
 
-    def estimate_error(self, mu):
+    def estimate_error(self, mu, return_reduced_coefficients=False):
         """Estimates the error in the final time adjoint."""
         A = self.parametrized_A(mu)
         B = self.parametrized_B(mu)
@@ -61,7 +64,10 @@ class ReducedModel:
             phi_reduced_coefficients = np.linalg.solve(mat.T @ mat, mat.T @ self.M @ (x0_T_mu - xT))
             projection = mat @ phi_reduced_coefficients
         else:
+            phi_reduced_coefficients = None
             projection = np.zeros(self.N)
 
         estimated_error_mu = self.spatial_norm(projection - self.M @ (x0_T_mu - xT))
+        if return_reduced_coefficients:
+            return estimated_error_mu, phi_reduced_coefficients
         return estimated_error_mu
