@@ -10,7 +10,6 @@ class BasicReducedMachineLearningModel:
                  parametrized_xT, R_chol, M, logger_name, spatial_norm=lambda x: np.linalg.norm(x), zero_padding=True):
         self.training_data = training_data
         self.reduced_model = reduced_model
-        self.reduced_basis = self.reduced_model.reduced_basis
         self.N = self.reduced_model.N
         self.T = T
         self.nt = nt
@@ -41,7 +40,7 @@ class BasicReducedMachineLearningModel:
                 self.training_data[i] = (mu, np.hstack([coeffs, 0.]))
         else:
             # Train a machine learning surrogate for every component of the coefficients individually
-            raise NotImplementedError
+            pass
 
     def solve(self, mu, reduced_coeffs=None, return_adjoint=True, return_adjoint_coefficients=False):
         """Solves the machine learning reduced model for the given parameter."""
