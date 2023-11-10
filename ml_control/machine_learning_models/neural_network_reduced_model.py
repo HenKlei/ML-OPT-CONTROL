@@ -10,9 +10,12 @@ from ml_control.machine_learning_models.neural_network_utils import FullyConnect
 class NeuralNetworkReducedModel(BasicReducedMachineLearningModel):
     def __init__(self, reduced_model, training_data, T, nt, parametrized_A, parametrized_B, parametrized_x0,
                  parametrized_xT, R_chol, M, validation_ratio=0.1, scale_inputs=False, scale_outputs=True,
-                 spatial_norm=lambda x: np.linalg.norm(x)):
+                 spatial_norm=lambda x: np.linalg.norm(x), zero_padding=True):
         super().__init__(reduced_model, training_data, T, nt, parametrized_A, parametrized_B, parametrized_x0,
-                         parametrized_xT, R_chol, M, 'NeuralNetworkReducedModel', spatial_norm=spatial_norm)
+                         parametrized_xT, R_chol, M, 'NeuralNetworkReducedModel', spatial_norm=spatial_norm,
+                         zero_padding=zero_padding)
+
+        assert zero_padding, 'Only zero padding supported for neural networks!'
 
         self.validation_ratio = validation_ratio
         self.scaling_parameters = {'min_inputs': None, 'max_inputs': None,

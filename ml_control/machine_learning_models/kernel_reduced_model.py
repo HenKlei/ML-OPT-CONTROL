@@ -7,9 +7,10 @@ from ml_control.machine_learning_models.basic_reduced_model import BasicReducedM
 
 class KernelReducedModel(BasicReducedMachineLearningModel):
     def __init__(self, reduced_model, training_data, T, nt, parametrized_A, parametrized_B, parametrized_x0,
-                 parametrized_xT, R_chol, M, spatial_norm=lambda x: np.linalg.norm(x)):
+                 parametrized_xT, R_chol, M, spatial_norm=lambda x: np.linalg.norm(x), zero_padding=True):
         super().__init__(reduced_model, training_data, T, nt, parametrized_A, parametrized_B, parametrized_x0,
-                         parametrized_xT, R_chol, M, 'KernelReducedModel', spatial_norm=spatial_norm)
+                         parametrized_xT, R_chol, M, 'KernelReducedModel', spatial_norm=spatial_norm,
+                         zero_padding=zero_padding)
 
     def train(self, kernel=Gaussian(0.1), greedy_type='p_greedy', tol_p=1e-10, max_iter=None):
         """Trains the VKOGA surrogate."""

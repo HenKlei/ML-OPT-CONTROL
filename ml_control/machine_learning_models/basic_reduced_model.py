@@ -7,7 +7,7 @@ from ml_control.systems import get_control_from_final_time_adjoint, get_state_fr
 
 class BasicReducedMachineLearningModel:
     def __init__(self, reduced_model, training_data, T, nt, parametrized_A, parametrized_B, parametrized_x0,
-                 parametrized_xT, R_chol, M, logger_name, spatial_norm=lambda x: np.linalg.norm(x)):
+                 parametrized_xT, R_chol, M, logger_name, spatial_norm=lambda x: np.linalg.norm(x), zero_padding=True):
         self.training_data = training_data
         self.reduced_model = reduced_model
         self.reduced_basis = self.reduced_model.reduced_basis
@@ -22,6 +22,8 @@ class BasicReducedMachineLearningModel:
         self.M = M
         self.spatial_norm = spatial_norm
 
+        self.zero_padding = zero_padding
+
         self.logger = getLogger(logger_name, level='INFO')
 
     def train(self):
@@ -31,6 +33,15 @@ class BasicReducedMachineLearningModel:
     def get_coefficients(self, mu):
         """Computes the reduced coefficients for the given parameter using the machine learning surrogate."""
         raise NotImplementedError
+
+    def extend_model(self):
+        if self.zero_padding:
+            # Add zero padding to machine learning training data
+            for i, (mu, coeffs) in enumerate(self.training_data):
+                self.training_data[i] = (mu, np.hstack([coeffs, 0.]))
+        else:
+            # Train a machine learning surrogate for every component of the coefficients individually
+            raise NotImplementedError
 
     def solve(self, mu, reduced_coeffs=None, return_adjoint=True, return_adjoint_coefficients=False):
         """Solves the machine learning reduced model for the given parameter."""

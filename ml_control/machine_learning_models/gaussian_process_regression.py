@@ -6,9 +6,12 @@ from ml_control.machine_learning_models.basic_reduced_model import BasicReducedM
 
 class GaussianProcessRegressionReducedModel(BasicReducedMachineLearningModel):
     def __init__(self, reduced_model, training_data, T, nt, parametrized_A, parametrized_B, parametrized_x0,
-                 parametrized_xT, R_chol, M, spatial_norm=lambda x: np.linalg.norm(x)):
+                 parametrized_xT, R_chol, M, spatial_norm=lambda x: np.linalg.norm(x), zero_padding=True):
         super().__init__(reduced_model, training_data, T, nt, parametrized_A, parametrized_B, parametrized_x0,
-                         parametrized_xT, R_chol, M, 'GaussianProcessRegressionReducedModel', spatial_norm=spatial_norm)
+                         parametrized_xT, R_chol, M, 'GaussianProcessRegressionReducedModel', spatial_norm=spatial_norm,
+                         zero_padding=zero_padding)
+
+        assert zero_padding, 'Only zero padding supported for Gaussian Process Regression!'
 
     def train(self, kernel=gp.kernels.ConstantKernel(1.0, (1e-1, 1e3)) * gp.kernels.RBF(1.0, (1e-3, 1e3)),
               n_restarts_optimizer=10, alpha=0.001, normalize_y=True):
