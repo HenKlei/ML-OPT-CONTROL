@@ -7,7 +7,7 @@
 #           " Be greedy and learn: efficient and certified algorithms
 #                    for parametrized optimal control problems "
 #
-#   https://github.com/HenKlei/ml-control.git
+#   https://github.com/HenKlei/ML-OPT-CONTROL.git
 #
 # Copyright 2023 all developers. All rights reserved.
 # License: Licensed as BSD 2-Clause License (http://opensource.org/licenses/BSD-2-Clause)
