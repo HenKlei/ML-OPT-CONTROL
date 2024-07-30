@@ -27,8 +27,8 @@ On a system with `git` (`sudo apt install git`), `python3` (`sudo apt install py
 `venv` (`sudo apt install python3-venv`) installed, the following commands should be sufficient
 to install the `ml-control` package with all required dependencies in a new virtual environment:
 ```
-git clone https://github.com/HenKlei/ml-control.git
-cd ml-control
+git clone https://github.com/HenKlei/ML-OPT-CONTROL.git
+cd ML-OPT-CONTROL
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
