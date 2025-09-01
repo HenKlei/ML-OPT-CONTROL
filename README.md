@@ -54,4 +54,4 @@ We also provide different parametrizations and problem settings that are not con
 the paper in the folder [`wave_equation/`](ml_control/examples/wave_equation/).
 
 ## Questions
-If you have any questions, feel free to contact us via email at <hendrik.kleikamp@uni-muenster.de>.
+If you have any questions, feel free to contact us via email at <hendrik.kleikamp@uni-graz.at>.
