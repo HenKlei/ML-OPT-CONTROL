@@ -4,4 +4,4 @@ matplotlib==3.6.1
 scikit-learn==1.5.0
 git+https://github.com/GabrieleSantin/VKOGA.git
 --find-links https://download.pytorch.org/whl/torch_stable.html
-torch==1.12.1+cpu
+torch==2.8.0
